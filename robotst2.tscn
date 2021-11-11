@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://PC2.gd" type="Script" id=1]
 [ext_resource path="res://robo parts/blue ear.png" type="Texture" id=2]
@@ -101,9 +101,6 @@ animations = [ {
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 5.05821, 6.50899 )
 
-[sub_resource type="RectangleShape2D" id=5]
-extents = Vector2( 4.98775, 3.98172 )
-
 [node name="PC" type="KinematicBody2D"]
 collision_mask = 24
 script = ExtResource( 1 )
@@ -145,21 +142,8 @@ __meta__ = {
 [node name="platDetector" type="RayCast2D" parent="."]
 enabled = true
 cast_to = Vector2( 0, 10 )
-collision_mask = 12
+collision_mask = 8
 collide_with_areas = true
-
-[node name="Body" type="RigidBody2D" parent="."]
-collision_layer = 2
-collision_mask = 4
-mode = 1
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body"]
-position = Vector2( -1.02468, 1.99399 )
-shape = SubResource( 5 )
-disabled = true
-__meta__ = {
-"_edit_lock_": true
-}
 
 [node name="Sight" type="RayCast2D" parent="."]
 enabled = true

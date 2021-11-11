@@ -67,6 +67,7 @@ func _on_PC_throw():
 			force *= Vector2(throwPow, throwPow)
 	relic.hold_switch(false)
 	relic.slap(force)
+	update_strand()
 	pc.remove_box()
 	print('throw')
 	pass # Replace with function body.
