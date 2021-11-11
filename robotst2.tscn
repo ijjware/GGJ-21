@@ -1,0 +1,164 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://PC2.gd" type="Script" id=1]
+[ext_resource path="res://robo parts/blue ear.png" type="Texture" id=2]
+[ext_resource path="res://robo parts/head right.png" type="Texture" id=3]
+[ext_resource path="res://robo parts/head left.png" type="Texture" id=4]
+[ext_resource path="res://robo parts/red ear.png" type="Texture" id=5]
+
+[sub_resource type="Animation" id=1]
+resource_name = "left"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Head:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "left" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("rEar:z_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 1 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("bEar:z_index")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -1 ]
+}
+
+[sub_resource type="Animation" id=2]
+resource_name = "right"
+tracks/0/type = "value"
+tracks/0/path = NodePath("Head:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0.1 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "right" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("rEar:z_index")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.1 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ -1 ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("bEar:z_index")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0.1 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 1 ]
+}
+
+[sub_resource type="SpriteFrames" id=3]
+animations = [ {
+"frames": [ ExtResource( 3 ) ],
+"loop": true,
+"name": "right",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 4 ) ],
+"loop": true,
+"name": "left",
+"speed": 5.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=4]
+extents = Vector2( 5.05821, 6.50899 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 4.98775, 3.98172 )
+
+[node name="PC" type="KinematicBody2D"]
+collision_mask = 24
+script = ExtResource( 1 )
+vJump = 400
+
+[node name="Ani" type="AnimationPlayer" parent="."]
+anims/left = SubResource( 1 )
+anims/right = SubResource( 2 )
+
+[node name="Head" type="AnimatedSprite" parent="."]
+frames = SubResource( 3 )
+animation = "right"
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="bEar" type="Sprite" parent="."]
+z_index = 1
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="rEar" type="Sprite" parent="."]
+z_index = -1
+texture = ExtResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Full" type="CollisionShape2D" parent="."]
+position = Vector2( -1.04636, -0.48439 )
+shape = SubResource( 4 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="platDetector" type="RayCast2D" parent="."]
+enabled = true
+cast_to = Vector2( 0, 10 )
+collision_mask = 12
+collide_with_areas = true
+
+[node name="Body" type="RigidBody2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+mode = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body"]
+position = Vector2( -1.02468, 1.99399 )
+shape = SubResource( 5 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Sight" type="RayCast2D" parent="."]
+enabled = true
+cast_to = Vector2( -15, 0 )
+collision_mask = 12

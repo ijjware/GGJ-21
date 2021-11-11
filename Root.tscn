@@ -1,0 +1,58 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://robotst2.tscn" type="PackedScene" id=1]
+[ext_resource path="res://relic.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Root.gd" type="Script" id=3]
+
+[sub_resource type="PhysicsMaterial" id=1]
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 174.108, 14.9474 )
+
+[node name="Root" type="Node"]
+script = ExtResource( 3 )
+throwPow = 50
+throwup = -5
+
+[node name="floor" type="StaticBody2D" parent="."]
+collision_layer = 8
+collision_mask = 7
+physics_material_override = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor"]
+position = Vector2( 685.085, 640.049 )
+shape = SubResource( 2 )
+
+[node name="floor2" type="StaticBody2D" parent="."]
+collision_layer = 8
+collision_mask = 5
+physics_material_override = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor2"]
+position = Vector2( 919.324, 597.52 )
+shape = SubResource( 2 )
+
+[node name="Relic" parent="floor2" instance=ExtResource( 2 )]
+position = Vector2( 700.086, 559.201 )
+
+[node name="PC" parent="." instance=ExtResource( 1 )]
+position = Vector2( 664.703, 562.198 )
+vJump = 300
+gravity = 980.0
+
+[node name="Camera2D" type="Camera2D" parent="PC"]
+current = true
+zoom = Vector2( 0.4, 0.4 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[connection signal="drop" from="PC" to="." method="_on_PC_drop"]
+[connection signal="grab" from="PC" to="." method="_on_PC_grab"]
+[connection signal="throw" from="PC" to="." method="_on_PC_throw"]
