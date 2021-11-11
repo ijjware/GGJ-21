@@ -4,9 +4,15 @@ onready var relics = get_tree().get_nodes_in_group('relics')
 onready var pc = $PC
 onready var held_relics := []
 
+#throw variables
 export var throwPow = 10000
 export var throwup = -1
 export var throwdown = 5
+
+#water physics variables
+#export var gravInc = 300
+#export var jumpInc = 200
+#export var walkInc = 50
 
 #onready var relic_index = 0
 
@@ -77,3 +83,20 @@ func update_strand():
 	for relic in held_relics:
 		var index = held_relics.find(relic)
 		relic.index = index
+
+
+func _on_Water_pc_dry():
+	pc.move_terrain(false)
+	print('root dry')
+#	wet_the_pc(1)
+
+func _on_Water_pc_wet():
+	pc.move_terrain(true)
+#	pc.check_detector()
+	print('root wet')
+#	wet_the_pc(-1)
+
+#func wet_the_pc(signa : int):
+#	pc.gravity += gravInc * signa
+##	pc.vJump += jumpInc * signa
+#	pc.sWalk += walkInc * signa

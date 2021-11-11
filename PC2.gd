@@ -7,19 +7,35 @@ var screen_size
 var jump_counter = 0
 onready var plat_detect = $platDetector
 onready var ani = $Ani
-#jump physics vars
+
+#physics vars
 export var vJump = 600
 export var gravity = 200.0
 export var sWalk = 200
+
+#minimum physics variables
+export var minWalk = 20
+export var minGrav = 200
+export var minJump = 30
+var velocity := Vector2()
+
+#water physics increments
+export var gravInc = 300
+export var jumpInc = 200
+export var walkInc = 50
+
+#crate physics increments
 export var vInc = 100
 export var sInc = 30
-var velocity = Vector2()
+export var vIncWet = 20
+export var sIncWet = 10
+
 onready var facingDir = $Head.get_animation()
 onready var sightline = $Sight
 onready var first_pos = Vector2(0, -8)
 var pos_gap = Vector2(0, -12)
 var relicBoxes = []
-var numBoxes = 0
+var underwater = false
 
 signal grab(pos)
 signal drop()
@@ -69,15 +85,17 @@ func seeing(pos):
 
 func _physics_process(delta):
 	if Input.is_action_pressed("right"):
-			velocity.x = sWalk
-			facingDir = 'right'
-			seeing(Vector2(10, 0))
-			ani.play(facingDir)
+		if sWalk < minWalk: velocity.x = minWalk
+		else: velocity.x = sWalk
+		facingDir = 'right'
+		seeing(Vector2(10, 0))
+		ani.play(facingDir)
 	elif Input.is_action_pressed("left"):
-			velocity.x = -sWalk
-			facingDir = 'left'
-			seeing(Vector2(-10, 0))
-			ani.play(facingDir)
+		if sWalk < minWalk: velocity.x = -minWalk
+		else: velocity.x = -sWalk
+		facingDir = 'left'
+		seeing(Vector2(-10, 0))
+		ani.play(facingDir)
 	else:
 		velocity.x = 0
 #	if get_tree().current_scene.get_name().match("Main") :
@@ -107,11 +125,34 @@ func start(pos):
 func vertical_movement(delta):
 	velocity.y += delta * gravity
 #	var local_Y = Vector2.UP
-	if Input.is_action_just_pressed("jump") && jump_counter < 2 :
-		velocity.y = -vJump
-		jump_counter +=1
+	if Input.is_action_just_pressed("jump"):
+		if jump_counter < 2 || underwater:
+			if vJump < minJump: velocity.y = -minJump
+			else: velocity.y = -vJump
+	#		velocity.y = -vJump
+			if not underwater:
+				jump_counter +=1
+			else: jump_counter = 0
 #	var k = move_and_slide(velocity, Vector2(0,-1)) 
 	if plat_detect.is_colliding():
 #		print('floo')
 		jump_counter = 0
-		velocity.y -= delta * gravity
+		if gravity < minGrav : velocity.y -= delta * minGrav
+		else: velocity.y -= delta * gravity
+
+func move_terrain(wet):
+	var boxes = relicBoxes.size()
+	if wet:
+		underwater = true
+		boxes *= -1
+		wet_pc(-1)
+	else:
+		underwater = false
+		wet_pc(1)
+	vJump += boxes * vIncWet
+	sWalk += boxes * sIncWet
+
+func wet_pc(signa : int):
+	gravity += gravInc * signa
+	vJump += jumpInc * signa
+	sWalk += walkInc * signa
