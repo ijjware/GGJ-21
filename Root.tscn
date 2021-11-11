@@ -14,6 +14,18 @@ script = ExtResource( 3 )
 throwPow = 50
 throwup = -5
 
+[node name="floor2" type="StaticBody2D" parent="."]
+collision_layer = 8
+collision_mask = 5
+physics_material_override = SubResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="floor2"]
+position = Vector2( 919.324, 591.863 )
+shape = SubResource( 2 )
+
 [node name="floor" type="StaticBody2D" parent="."]
 collision_layer = 8
 collision_mask = 7
@@ -26,19 +38,7 @@ __meta__ = {
 position = Vector2( 685.085, 640.049 )
 shape = SubResource( 2 )
 
-[node name="floor2" type="StaticBody2D" parent="."]
-collision_layer = 8
-collision_mask = 5
-physics_material_override = SubResource( 1 )
-__meta__ = {
-"_edit_lock_": true
-}
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="floor2"]
-position = Vector2( 919.324, 597.52 )
-shape = SubResource( 2 )
-
-[node name="Relic" parent="floor2" instance=ExtResource( 2 )]
+[node name="Relic" parent="." instance=ExtResource( 2 )]
 position = Vector2( 700.086, 559.201 )
 
 [node name="PC" parent="." instance=ExtResource( 1 )]

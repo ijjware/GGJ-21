@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+export (PackedScene) var Box
+
 var vertical_speed := 0.0
 var screen_size
 var jump_counter = 0
@@ -14,6 +16,8 @@ onready var facingDir = $Head.get_animation()
 onready var sightline = $Sight
 onready var first_pos = Vector2(0, -8)
 var pos_gap = Vector2(0, -12)
+var relicBoxes = []
+var numBoxes = 0
 
 signal grab(pos)
 signal drop()
@@ -26,6 +30,16 @@ func head_pos(index):
 		pos += (pos_gap * index)
 #		print(pos_gap * index)
 	return pos
+
+func add_box():
+	var box = Box.instance()
+	add_child(box)
+	relicBoxes.append(box)
+	box.global_position = head_pos(relicBoxes.size() - 1)
+
+func remove_box():
+	var nix = relicBoxes.pop_back()
+	nix.queue_free()
 
 func get_in_front():
 	var pos = global_position
@@ -46,9 +60,6 @@ func _ready():
 func seeing(pos):
 	sightline.cast_to = pos
 	sightline.force_raycast_update()
-#poopoo
-#func _unhandled_input(event):
-#	pass
 
 func _physics_process(delta):
 	if Input.is_action_pressed("right"):
@@ -98,17 +109,3 @@ func vertical_movement(delta):
 #		print('floo')
 		jump_counter = 0
 		velocity.y -= delta * gravity
-
-func _add_to_inventory(icon):
-	$PopupPanel/ItemList.add_icon_item(load(icon))
-	pass
-#
-#func Hud_update():
-#	dogCounter +=1
-#	$HUD/Label.text = labeltext + String(dogCounter)
-
-#func Hud_update2(Integer):
-#	$HUD/Label.text = labeltext + String(Integer)
-
-#func _on_PopupPanel_gui_input(event):
-#	pass

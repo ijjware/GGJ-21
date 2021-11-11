@@ -24,6 +24,7 @@ func _on_PC_grab(pos):
 #			print($PC.head_pos())
 			node.animate('float')
 			update_strand()
+			pc.add_box()
 			return
 
 func _unhandled_input(event):
@@ -50,6 +51,7 @@ func drop(index):
 	relic.global_position = pc.get_in_front()
 	relic.animate('rest')
 	update_strand()
+	pc.remove_box()
 
 func _on_PC_throw():
 	var force = Vector2(throwdown, throwup)
@@ -65,6 +67,7 @@ func _on_PC_throw():
 			force *= Vector2(throwPow, throwPow)
 	relic.hold_switch(false)
 	relic.slap(force)
+	pc.remove_box()
 	print('throw')
 	pass # Replace with function body.
 

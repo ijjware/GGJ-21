@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://PC2.gd" type="Script" id=1]
 [ext_resource path="res://robo parts/blue ear.png" type="Texture" id=2]
 [ext_resource path="res://robo parts/head right.png" type="Texture" id=3]
 [ext_resource path="res://robo parts/head left.png" type="Texture" id=4]
 [ext_resource path="res://robo parts/red ear.png" type="Texture" id=5]
+[ext_resource path="res://RelicBox.tscn" type="PackedScene" id=6]
 
 [sub_resource type="Animation" id=1]
 resource_name = "left"
@@ -106,6 +107,7 @@ extents = Vector2( 4.98775, 3.98172 )
 [node name="PC" type="KinematicBody2D"]
 collision_mask = 24
 script = ExtResource( 1 )
+Box = ExtResource( 6 )
 vJump = 400
 
 [node name="Ani" type="AnimationPlayer" parent="."]
@@ -134,7 +136,7 @@ __meta__ = {
 }
 
 [node name="Full" type="CollisionShape2D" parent="."]
-position = Vector2( -1.04636, -0.48439 )
+position = Vector2( -1, -0.5 )
 shape = SubResource( 4 )
 __meta__ = {
 "_edit_lock_": true
@@ -154,6 +156,7 @@ mode = 1
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Body"]
 position = Vector2( -1.02468, 1.99399 )
 shape = SubResource( 5 )
+disabled = true
 __meta__ = {
 "_edit_lock_": true
 }
