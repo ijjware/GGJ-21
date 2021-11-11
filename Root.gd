@@ -77,5 +77,3 @@ func update_strand():
 	for relic in held_relics:
 		var index = held_relics.find(relic)
 		relic.index = index
-		pass
-	pass

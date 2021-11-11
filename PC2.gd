@@ -11,6 +11,8 @@ onready var ani = $Ani
 export var vJump = 600
 export var gravity = 200.0
 export var sWalk = 200
+export var vInc = 100
+export var sInc = 30
 var velocity = Vector2()
 onready var facingDir = $Head.get_animation()
 onready var sightline = $Sight
@@ -36,10 +38,14 @@ func add_box():
 	add_child(box)
 	relicBoxes.append(box)
 	box.global_position = head_pos(relicBoxes.size() - 1)
+	vJump -= vInc
+	sWalk -= sInc
 
 func remove_box():
 	var nix = relicBoxes.pop_back()
 	nix.queue_free()
+	vJump += vInc
+	sWalk += sInc
 
 func get_in_front():
 	var pos = global_position

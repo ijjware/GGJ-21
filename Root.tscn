@@ -38,9 +38,6 @@ __meta__ = {
 position = Vector2( 266.319, 270.055 )
 shape = SubResource( 2 )
 
-[node name="Relic" parent="." instance=ExtResource( 2 )]
-position = Vector2( 281.32, 189.207 )
-
 [node name="PC" parent="." instance=ExtResource( 1 )]
 position = Vector2( 245.937, 192.204 )
 vJump = 300
@@ -55,6 +52,9 @@ __meta__ = {
 
 [node name="Relic2" parent="." instance=ExtResource( 2 )]
 position = Vector2( 362.318, 156.835 )
+
+[node name="Relic" parent="." instance=ExtResource( 2 )]
+position = Vector2( 281.32, 189.207 )
 
 [node name="Relic3" parent="." instance=ExtResource( 2 )]
 position = Vector2( 408.62, 160.483 )

@@ -106,6 +106,7 @@ collision_mask = 24
 script = ExtResource( 1 )
 Box = ExtResource( 6 )
 vJump = 400
+sWalk = 100
 
 [node name="Ani" type="AnimationPlayer" parent="."]
 anims/left = SubResource( 1 )
@@ -141,11 +142,11 @@ __meta__ = {
 
 [node name="platDetector" type="RayCast2D" parent="."]
 enabled = true
-cast_to = Vector2( 0, 10 )
+cast_to = Vector2( 0, 7 )
 collision_mask = 8
 collide_with_areas = true
 
 [node name="Sight" type="RayCast2D" parent="."]
 enabled = true
-cast_to = Vector2( -15, 0 )
+cast_to = Vector2( 10, 0 )
 collision_mask = 12

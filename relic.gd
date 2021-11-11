@@ -33,4 +33,7 @@ func _physics_process(delta):
 	if is_held:
 		linear_velocity = Vector2()
 		global_position = link.head_pos(index)
-		
+#		$Sprite.global_position = link.head_pos(index)
+#		$Sprite.global_position != link.head_pos(index):
+#			print('why')
+#			pass
