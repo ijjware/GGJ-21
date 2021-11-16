@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://art/bar_front.png" type="Texture" id=1]
+[ext_resource path="res://art/rainbow_back.png" type="Texture" id=2]
+
+[node name="RoboPow" type="TextureProgress"]
+margin_right = 25.0
+margin_bottom = 5.0
+texture_under = ExtResource( 1 )
+texture_progress = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

@@ -2,6 +2,8 @@ extends Node
 
 onready var relics = get_tree().get_nodes_in_group('relics')
 onready var pc = $PC
+onready var tutorial = $Tutorial
+onready var txt = $PC/Camera2D/SyndiBox
 onready var held_relics := []
 
 #throw variables
@@ -9,12 +11,7 @@ export var throwPow = 10000
 export var throwup = -1
 export var throwdown = 5
 
-#water physics variables
-#export var gravInc = 300
-#export var jumpInc = 200
-#export var walkInc = 50
-
-#onready var relic_index = 0
+onready var tutorialPhase = 'baby steps'
 
 func _on_PC_grab(pos):
 	var closest
@@ -23,6 +20,10 @@ func _on_PC_grab(pos):
 		distance = abs(node.global_position.distance_to(pos))
 #		print(distance)
 		if distance < 30 && not node.is_held:
+			if tutorialPhase == 'pickup':
+				txt.picked_up()
+				tutorialPhase = 'bridge1'
+				tutorial.enable_zone('overbridge')
 #			TODO: sort valid relics by distance and only grab closest relic
 			held_relics.insert(0, node)
 			node.link = pc
@@ -41,12 +42,12 @@ func _unhandled_input(event):
 
 func _on_PC_drop():
 	if held_relics.size() == 0:
-		print('empty handed')
+#		print('empty handed')
 		return
 	if not pc.sightline.is_colliding():
 		#	relic in index 0 is dropped		
 		drop(0)
-		print('drop')
+#		print('drop')
 
 func drop(index):
 	var relic = held_relics[index]
@@ -54,7 +55,7 @@ func drop(index):
 #   node is removed from list of held relics
 #   node is placed in front of player
 	relic.hold_switch(false)
-	relic.global_position = pc.get_in_front()
+	relic.global_position = pc.global_position
 	relic.animate('rest')
 	update_strand()
 	pc.remove_box()
@@ -62,7 +63,7 @@ func drop(index):
 func _on_PC_throw():
 	var force = Vector2(throwdown, throwup)
 	if held_relics.size() == 0:
-		print('empty handed')
+#		print('empty handed')
 		return
 	var relic = held_relics[0]
 	held_relics.remove(0)
@@ -75,8 +76,7 @@ func _on_PC_throw():
 	relic.slap(force)
 	update_strand()
 	pc.remove_box()
-	print('throw')
-	pass # Replace with function body.
+#	print('throw')
 
 func update_strand():
 #	updates the indices + positions of all held relics
@@ -84,19 +84,38 @@ func update_strand():
 		var index = held_relics.find(relic)
 		relic.index = index
 
-
 func _on_Water_pc_dry():
 	pc.move_terrain(false)
-	print('root dry')
-#	wet_the_pc(1)
+#	print('root dry')
 
 func _on_Water_pc_wet():
 	pc.move_terrain(true)
-#	pc.check_detector()
-	print('root wet')
-#	wet_the_pc(-1)
+#	print('root wet')
 
-#func wet_the_pc(signa : int):
-#	pc.gravity += gravInc * signa
-##	pc.vJump += jumpInc * signa
-#	pc.sWalk += walkInc * signa
+func _on_SyndiBox_first_steps():
+	tutorial.baby_steps()
+	tutorialPhase = 'pickup'
+
+# TODO: finish up tut sequence
+func _on_zones_body_entered(body):
+	if body == pc:
+		if tutorialPhase == 'pickup':
+			txt.pickup()
+			tutorial.disable_zone('pickup')
+		if tutorialPhase == 'bridge1':
+#			print('bridge')
+			tutorial.bridge1_break()
+			tutorial.disable_zone('overbridge')
+			yield(get_tree().create_timer(2, false), "timeout")
+			txt.first_fall()
+		if tutorialPhase == 'bridge2':
+#			print('2 break')
+			tutorial.bridge2_break()
+			tutorial.disable_zone('overbridge2')
+			yield(get_tree().create_timer(2, false), "timeout")
+			txt.second_fall()
+			pc.thrusters = true
+			tutorial.queue_free()
+
+func _on_SyndiBox_second_fall():
+	tutorialPhase = 'bridge2'

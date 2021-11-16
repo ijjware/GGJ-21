@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://PC2.gd" type="Script" id=1]
 [ext_resource path="res://robo parts/blue ear.png" type="Texture" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://robo parts/head left.png" type="Texture" id=4]
 [ext_resource path="res://robo parts/red ear.png" type="Texture" id=5]
 [ext_resource path="res://RelicBox.tscn" type="PackedScene" id=6]
+[ext_resource path="res://RoboPow.tscn" type="PackedScene" id=7]
 
 [sub_resource type="Animation" id=1]
 resource_name = "left"
@@ -105,6 +106,7 @@ extents = Vector2( 5.05821, 6.50899 )
 collision_mask = 24
 script = ExtResource( 1 )
 Box = ExtResource( 6 )
+depleteAmt = 1.0
 vJump = 400
 gravity = 980.0
 
@@ -144,14 +146,37 @@ __meta__ = {
 enabled = true
 cast_to = Vector2( 0, 7 )
 collision_mask = 8
+collide_with_areas = true
 __meta__ = {
 "_edit_lock_": true
 }
 
 [node name="Sight" type="RayCast2D" parent="."]
 enabled = true
-cast_to = Vector2( 10, 0 )
+cast_to = Vector2( 5, 0 )
 collision_mask = 12
 __meta__ = {
 "_edit_lock_": true
 }
+
+[node name="DepleteTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.1
+autostart = true
+
+[node name="ChargeTimer" type="Timer" parent="."]
+process_mode = 0
+wait_time = 0.2
+autostart = true
+
+[node name="RoboPow" parent="." instance=ExtResource( 7 )]
+margin_left = -195.805
+margin_top = -105.174
+margin_right = -170.805
+margin_bottom = -100.174
+rect_scale = Vector2( 1.5, 1.5 )
+
+[node name="Tween" type="Tween" parent="."]
+
+[connection signal="timeout" from="DepleteTimer" to="." method="_on_DepleteTimer_timeout"]
+[connection signal="timeout" from="ChargeTimer" to="." method="_on_ChargeTimer_timeout"]
