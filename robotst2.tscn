@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=2]
 
-[ext_resource path="res://PC2.gd" type="Script" id=1]
+[ext_resource path="res://robot.gd" type="Script" id=1]
 [ext_resource path="res://robo parts/blue ear.png" type="Texture" id=2]
 [ext_resource path="res://robo parts/head right.png" type="Texture" id=3]
 [ext_resource path="res://robo parts/head left.png" type="Texture" id=4]
@@ -109,6 +109,8 @@ Box = ExtResource( 6 )
 depleteAmt = 1.0
 vJump = 400
 gravity = 980.0
+sWalk = 170
+sInc = 15
 
 [node name="Ani" type="AnimationPlayer" parent="."]
 anims/left = SubResource( 1 )
@@ -144,7 +146,7 @@ __meta__ = {
 
 [node name="platDetector" type="RayCast2D" parent="."]
 enabled = true
-cast_to = Vector2( 0, 7 )
+cast_to = Vector2( 0, 10 )
 collision_mask = 8
 collide_with_areas = true
 __meta__ = {

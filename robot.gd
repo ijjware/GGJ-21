@@ -116,7 +116,7 @@ func _physics_process(delta):
 			if sWalk < minWalk: velocity.x = minWalk
 			else: velocity.x = sWalk
 			facingDir = 'right'
-			seeing(Vector2(sightDist, 0))
+			seeing(Vector2(sightDist-.5, 0))
 			ani.play(facingDir)
 		elif Input.is_action_pressed("left"):
 			if sWalk < minWalk: velocity.x = -minWalk
@@ -127,8 +127,6 @@ func _physics_process(delta):
 		else: velocity.x = 0
 	else: velocity.x = 0
 	vertical_movement(delta)
-#	get_tree().call_group('parts', 'move_and_slide', velocity, Vector2(0, -1))
-#	global_position = $Full.global_position
 	move_and_slide(velocity, Vector2(0, -1))
 	if Input.is_action_just_pressed("pick_up"):
 		emit_signal("grab", global_position)
@@ -141,12 +139,6 @@ func disable_plat():
 	plat_detect.enabled = false
 	yield(get_tree().create_timer(.2, false), "timeout")
 	plat_detect.enabled = true
-
-func start(pos):
-	position = pos
-	#target = pos
-	show()
-#	$CollisionShape2D.disabled = false
 
 func battery_die():
 	set_physics_process(false)

@@ -19,7 +19,7 @@ func _on_PC_grab(pos):
 	for node in relics:
 		distance = abs(node.global_position.distance_to(pos))
 #		print(distance)
-		if distance < 30 && not node.is_held:
+		if distance < 10 && not node.is_held:
 			if tutorialPhase == 'pickup':
 				txt.picked_up()
 				tutorialPhase = 'bridge1'

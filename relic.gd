@@ -22,12 +22,12 @@ func hold_switch(held):
 func slap(power):
 #	print(linear_velocity)
 #	print(applied_force)
-	$CollisionShape2D.set_deferred('disabled', true)
+#	$CollisionShape2D.set_deferred('disabled', true)
 	linear_velocity = Vector2()
-	print(power)
+#	print(power)
 	apply_central_impulse(power)
-	yield(get_tree().create_timer(.1, false), "timeout")
-	$CollisionShape2D.set_deferred('disabled', false)
+#	yield(get_tree().create_timer(.1, false), "timeout")
+#	$CollisionShape2D.set_deferred('disabled', false)
 
 func _physics_process(delta):
 	if is_held:
