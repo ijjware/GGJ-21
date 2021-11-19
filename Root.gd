@@ -1,17 +1,29 @@
 extends Node
 
 onready var relics = get_tree().get_nodes_in_group('relics')
+var numRelics = 0
+var recovery = 0.0
 onready var pc = $PC
 onready var tutorial = $Tutorial
 onready var txt = $PC/Camera2D/SyndiBox
+onready var cam = $PC/Camera2D
+onready var camLimiter = $Limiter
 onready var held_relics := []
+var recovered_relics = 0
+onready var startpos = $Start.global_position
+onready var water = $Water
 
 #throw variables
 export var throwPow = 10000
 export var throwup = -1
 export var throwdown = 5
 
+onready var Day = 1
 onready var tutorialPhase = 'baby steps'
+
+func _ready():
+	limit_camera()
+	numRelics = relics.size()
 
 func _on_PC_grab(pos):
 	var closest
@@ -39,6 +51,8 @@ func _unhandled_input(event):
 		get_tree().reload_current_scene()
 	if event.is_action_pressed("break"):
 		pass
+	if event.is_action_pressed("drop_all"):
+		lose_relics()
 
 func _on_PC_drop():
 	if held_relics.size() == 0:
@@ -60,10 +74,31 @@ func drop(index):
 	update_strand()
 	pc.remove_box()
 
+func lose_relics():
+	for relic in held_relics:
+		var force = Vector2(throwdown, throwup)
+		if held_relics.size() == 0: return
+		match(pc.facingDir):
+			'left':
+				force *= Vector2(-throwPow, throwPow)
+			'right':
+				force *= Vector2(throwPow, throwPow)
+		relic.hold_switch(false)
+		relic.slap(force)
+		update_strand()
+		pc.remove_box()
+	held_relics.clear()
+
+func kill_relics():
+	for relic in relics:
+		if water.overlaps_body(relic):
+			relic.remove_from_group('relics')
+			relic.queue_free()
+	relics = get_tree().get_nodes_in_group('relics')
+
 func _on_PC_throw():
 	var force = Vector2(throwdown, throwup)
 	if held_relics.size() == 0:
-#		print('empty handed')
 		return
 	var relic = held_relics[0]
 	held_relics.remove(0)
@@ -74,9 +109,9 @@ func _on_PC_throw():
 			force *= Vector2(throwPow, throwPow)
 	relic.hold_switch(false)
 	relic.slap(force)
+	pc.throwav()
 	update_strand()
 	pc.remove_box()
-#	print('throw')
 
 func update_strand():
 #	updates the indices + positions of all held relics
@@ -119,3 +154,48 @@ func _on_zones_body_entered(body):
 
 func _on_SyndiBox_second_fall():
 	tutorialPhase = 'bridge2'
+
+func limit_camera():
+	cam.limit_bottom = camLimiter.get_limit('down')
+	cam.limit_top = camLimiter.get_limit('up')
+	cam.limit_right = camLimiter.get_limit('right')
+	cam.limit_left = camLimiter.get_limit('left')
+
+func _on_DisplayTimer_day_passed():
+	day_end()
+
+func day_end():
+	print(recovery as String + '% relics recovered')
+	print('day over')
+#	drop all relix
+	lose_relics()
+#	fade out
+	$AnimationPlayer.play("fade out")
+	yield($AnimationPlayer, "animation_finished")
+#	reset to start pos
+	pc.global_position = startpos
+#	kill all relix underwater
+	yield(get_tree().create_timer(1, false), "timeout")
+	kill_relics()
+#	increment day counter
+#	swap out water
+	Day += 1
+	water.change_water(Day)
+#	reset timer
+	$DisplayTimer.secs = 101
+	$DisplayTimer.get_time()
+	$DisplayTimer.stop()
+	yield(get_tree().create_timer(1, false), "timeout")
+#	fade in, timer start
+	$AnimationPlayer.play_backwards("fade out")
+	yield($AnimationPlayer, "animation_finished")
+
+func _on_Chest_body_entered(body):
+	if body.is_in_group('relics'):
+		$deposit.play()
+#		print('box it')
+		recovered_relics += 1
+		recovery = floor((recovered_relics as float/numRelics as float)*100)
+		body.remove_from_group('relics')
+		body.queue_free()
+		relics = get_tree().get_nodes_in_group('relics')

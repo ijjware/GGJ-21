@@ -2,25 +2,20 @@ extends KinematicBody2D
 
 export (PackedScene) var Box
 
+var toss = preload('res://sounds/Jump.wav')
+var jump = preload('res://sounds/jamp.wav')
+var borble = preload('res://sounds/bubble.wav')
+
 var vertical_speed := 0.0
 var jump_counter = 0
 var thrusters = false
-onready var plat_detect = $platDetector
+var bonkHeight = -7
+onready var possessor = $possessives
+onready var walker = $walk
+onready var jamper = $jamp
+onready var tree = get_tree()
 onready var eyes = $Sight
 onready var ani = $Ani
-
-#solar charge vars
-onready var display = $RoboPow
-export var solarPower = 0
-export var powerMax = 100
-export var chargeTime = .2
-export var chargeAmt = 1
-export var depleteTime = .1
-export var depleteAmt = 1.1
-export var chargeMod = .5
-export var jumpExhaust = 10
-var powerChange = 0
-var is_dead = false
 
 #physics vars
 export var vJump = 600
@@ -30,7 +25,7 @@ export var sWalk = 200
 #minimum physics variables
 export var minWalk = 20
 export var minGrav = 200
-export var minJump = 30
+export var minJump = 100
 var velocity := Vector2()
 
 #water physics increments
@@ -58,9 +53,9 @@ signal throw()
 
 func _ready():
 	thrusters = true
-	$ChargeTimer.wait_time = chargeTime
-	$DepleteTimer.wait_time = depleteTime
-	solarPower = powerMax
+#	$ChargeTimer.wait_time = chargeTime
+#	$DepleteTimer.wait_time = depleteTime
+#	solarPower = powerMax
 	pass
 
 func head_pos(index):
@@ -71,11 +66,14 @@ func head_pos(index):
 #		print(pos_gap * index)
 	return pos
 
+
+
 func add_box():
 	var box = Box.instance()
 	add_child(box)
 	relicBoxes.append(box)
 	box.global_position = head_pos(relicBoxes.size() - 1)
+	move_bonkers()
 	vJump -= vInc
 	sWalk -= sInc
 	if underwater:
@@ -84,7 +82,8 @@ func add_box():
 
 func remove_box():
 	var nix = relicBoxes.pop_back()
-	nix.queue_free()
+	if nix: nix.queue_free()
+	move_bonkers()
 	vJump += vInc
 	sWalk += sInc
 	if underwater:
@@ -106,26 +105,23 @@ func seeing(pos):
 	sightline.force_raycast_update()
 
 func _physics_process(delta):
-	animate_bar()
-#	TODO: fix checks so gravity still applies when battery dies
-#	fix where battery depletes from gravity alone
-	if solarPower == 0:
-		battery_die()
-	if solarPower > 0:
-		if Input.is_action_pressed("right"):
-			if sWalk < minWalk: velocity.x = minWalk
-			else: velocity.x = sWalk
-			facingDir = 'right'
-			seeing(Vector2(sightDist-.5, 0))
-			ani.play(facingDir)
-		elif Input.is_action_pressed("left"):
-			if sWalk < minWalk: velocity.x = -minWalk
-			else: velocity.x = -sWalk
-			facingDir = 'left'
-			seeing(Vector2(-(sightDist+ 1) , 0))
-			ani.play(facingDir)
-		else: velocity.x = 0
-	else: velocity.x = 0
+	if Input.is_action_pressed("right"):
+		if sWalk < minWalk: velocity.x = minWalk
+		else: velocity.x = sWalk
+		facingDir = 'right'
+		seeing(Vector2(sightDist-.5, 0))
+		ani.play(facingDir)
+		if detect_floors(): walkwav()
+	elif Input.is_action_pressed("left"):
+		if sWalk < minWalk: velocity.x = -minWalk
+		else: velocity.x = -sWalk
+		facingDir = 'left'
+		seeing(Vector2(-(sightDist+ .5) , 0))
+		ani.play(facingDir)
+		if detect_floors(): walkwav()
+	else: 
+		velocity.x = 0
+#		stop_walk()
 	vertical_movement(delta)
 	move_and_slide(velocity, Vector2(0, -1))
 	if Input.is_action_just_pressed("pick_up"):
@@ -136,36 +132,29 @@ func _physics_process(delta):
 		else: emit_signal("throw")
 
 func disable_plat():
-	plat_detect.enabled = false
-	yield(get_tree().create_timer(.2, false), "timeout")
-	plat_detect.enabled = true
-
-func battery_die():
-	set_physics_process(false)
-#	is_dead = true
-	yield(get_tree().create_timer(3, false), "timeout")
-	solarPower = 20
-#	is_dead = false
-	set_physics_process(true)
-
+	tree.call_group('platDetectors', 'set_enabled', false)
+	yield(get_tree().create_timer(.5, false), "timeout")
+	tree.call_group('platDetectors', 'set_enabled', true)
 
 func vertical_movement(delta):
 	if gravity < minGrav : velocity.y += delta * minGrav
 	else: velocity.y += delta * gravity
-	if Input.is_action_just_pressed("jump") && thrusters && solarPower > 0:
+	if detect_floors():
+		jump_counter = 0
+		if velocity.y > 0: velocity.y = 0
+	if Input.is_action_just_pressed("jump") && thrusters: # && solarPower > 0:
 		if jump_counter < 2 || not is_jump_limited():
+			jumpwav()
 			disable_plat()
 			if vJump < minJump: velocity.y = -minJump
 			else: velocity.y = -vJump
 			if is_jump_limited():
 				jump_counter +=1
-			else: jump_counter = 0
-	if plat_detect.is_colliding():
-#		print('floo')
-		jump_counter = 0
-		velocity.y = 0
-#		if gravity < minGrav : velocity.y -= delta * minGrav
-#		else: velocity.y -= delta * gravity
+#			else: jump_counter = 0
+	
+	if is_bonking():
+		if gravity < minGrav : velocity.y += delta * minGrav
+		else: velocity.y += delta * gravity
 
 func move_terrain(wet):
 	var boxes = relicBoxes.size()
@@ -183,6 +172,19 @@ func is_jump_limited():
 	if underwater or eyes.is_colliding(): return false
 	else: return true
 
+func is_bonking():
+	for bonker in tree.get_nodes_in_group('bonkers'):
+		if bonker.is_colliding(): return true
+	return false
+
+func move_bonkers():
+	var new = 0
+	# 10(relic - 1) + 7
+	if relicBoxes.size() == 0: new = -7
+	else: new = (-12 * (relicBoxes.size() - 1) - 15)
+	for bonker in tree.get_nodes_in_group('bonkers'):
+		bonker.position.y = new
+
 func wet_pc(signa : int):
 	gravity += gravInc * signa
 	vJump += jumpInc * signa
@@ -191,29 +193,25 @@ func wet_pc(signa : int):
 func switch_thrusters(switch):
 	thrusters = switch
 
-func _on_DepleteTimer_timeout():
-	if velocity != Vector2(): 
-#		powerChange -= depleteRate
-#		animate_bar(solarPower - depleteRate)
-		solarPower -= depleteAmt
+func detect_floors():
+	for detector in tree.get_nodes_in_group('platDetectors'):
+		if detector.is_colliding(): return true
+	return false
 
-func _on_ChargeTimer_timeout():
-#	powerChange += chargeRate
-#	animate_bar(solarPower + chargeRate)
-	solarPower += chargeAmt
-	if underwater:
-		solarPower -= chargeMod
+#sound funcs
+func throwav():
+	possessor.set_stream(toss)
+	possessor.play()
 
-func animate_bar():#final):
-#	print(final)
-	display.value = solarPower
-#	print(powerChange)
-#	$Tween.interpolate_property(display, 'value', solarPower, (solarPower + powerChange), .1)
-#	$Tween.start()
-#	solarPower += powerChange
-#	powerChange = 0
+func jumpwav():
+	if underwater: jamper.set_stream(borble)
+	else: jamper.set_stream(jump)
+	jamper.play()
 
-#func move_bar():
-#	var transform = get_tree().get_root().get_canvas_transform()
-#	$RoboPow.value = solarPower
-#	$RoboPow.rect_position = (transform.get_origin() * -1) # + Vector2(50, 0)
+func walkwav():
+	if not walker.playing:
+		walker.play()
+
+func stop_walk():
+#	yield(walker, "finished")
+	walker.stop()

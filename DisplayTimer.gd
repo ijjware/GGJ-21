@@ -1,31 +1,21 @@
 extends Label
 
-var secs = 0
-var mins = 0
-#var millis = 0
+var secs = 100
+
+signal day_passed
 
 func _on_Timer_timeout():
-#	millis += 1
-#	if millis == 100:
-#		secs += 1
-#		millis = 0
-	secs += 1
-	if secs == 60:
-		mins += 1
-		secs = 0
-	set_text(get_time())
+	secs -= 1
+	get_time()
+	if secs == 0:
+		emit_signal("day_passed")
 
 func get_time():
-	var secString
-	var minString
-	if mins < 10: minString = '0' + mins as String
-#	var milliString
-#	if millis < 10 : milliString = '0' + millis as String
-#	else: milliString = millis as String
-	if secs < 10: secString = '0'+secs as String
+	var secString = secs as String
+	if secs < 100: secString = '0'+secString
+	if secs < 10: secString = '0'+secString
 	else: secString = secs as String
-	return (minString + ':' + secString)
-	# set_text(mins as String + ':' + secString) # + ':' + milliString) 
+	set_text(secString)
 
 func _process(delta):
 	var transform = get_tree().get_root().get_canvas_transform()

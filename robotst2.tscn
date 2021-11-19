@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://robot.gd" type="Script" id=1]
 [ext_resource path="res://robo parts/blue ear.png" type="Texture" id=2]
@@ -6,7 +6,9 @@
 [ext_resource path="res://robo parts/head left.png" type="Texture" id=4]
 [ext_resource path="res://robo parts/red ear.png" type="Texture" id=5]
 [ext_resource path="res://RelicBox.tscn" type="PackedScene" id=6]
-[ext_resource path="res://RoboPow.tscn" type="PackedScene" id=7]
+[ext_resource path="res://sounds/bubble.wav" type="AudioStream" id=7]
+[ext_resource path="res://sounds/sand2.wav" type="AudioStream" id=8]
+[ext_resource path="res://sounds/Jump.wav" type="AudioStream" id=9]
 
 [sub_resource type="Animation" id=1]
 resource_name = "left"
@@ -45,6 +47,42 @@ tracks/2/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ -1 ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("right:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("left:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("platDetector:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( -2, 6 ) ]
 }
 
 [sub_resource type="Animation" id=2]
@@ -85,38 +123,87 @@ tracks/2/keys = {
 "update": 1,
 "values": [ 1 ]
 }
+tracks/3/type = "value"
+tracks/3/path = NodePath("left:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ true ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("right:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ false ]
+}
+tracks/5/type = "value"
+tracks/5/path = NodePath("platDetector:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector2( 0, 6 ) ]
+}
 
 [sub_resource type="SpriteFrames" id=3]
 animations = [ {
-"frames": [ ExtResource( 3 ) ],
-"loop": true,
-"name": "right",
-"speed": 5.0
-}, {
 "frames": [ ExtResource( 4 ) ],
 "loop": true,
 "name": "left",
 "speed": 5.0
+}, {
+"frames": [ ExtResource( 3 ) ],
+"loop": true,
+"name": "right",
+"speed": 5.0
 } ]
-
-[sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 5.05821, 6.50899 )
 
 [node name="PC" type="KinematicBody2D"]
 collision_mask = 24
 script = ExtResource( 1 )
 Box = ExtResource( 6 )
-depleteAmt = 1.0
 vJump = 400
 gravity = 980.0
 sWalk = 170
 sInc = 15
+
+[node name="walk" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 8 )
+bus = "Water"
+area_mask = 29
+
+[node name="jamp" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 7 )
+bus = "Water"
+area_mask = 29
+
+[node name="possessives" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 9 )
+volume_db = -10.0
+bus = "Water"
+area_mask = 29
 
 [node name="Ani" type="AnimationPlayer" parent="."]
 anims/left = SubResource( 1 )
 anims/right = SubResource( 2 )
 
 [node name="Head" type="AnimatedSprite" parent="."]
+position = Vector2( -1, -1 )
 frames = SubResource( 3 )
 animation = "right"
 __meta__ = {
@@ -124,6 +211,7 @@ __meta__ = {
 }
 
 [node name="bEar" type="Sprite" parent="."]
+position = Vector2( -1, -0.5 )
 z_index = 1
 texture = ExtResource( 2 )
 __meta__ = {
@@ -131,54 +219,67 @@ __meta__ = {
 }
 
 [node name="rEar" type="Sprite" parent="."]
+position = Vector2( -1, -0.5 )
 z_index = -1
 texture = ExtResource( 5 )
 __meta__ = {
 "_edit_lock_": true
 }
 
-[node name="Full" type="CollisionShape2D" parent="."]
-position = Vector2( -1, -0.5 )
-shape = SubResource( 4 )
-__meta__ = {
-"_edit_lock_": true
-}
+[node name="right" type="CollisionPolygon2D" parent="."]
+visible = false
+polygon = PoolVector2Array( -6, -6, -5, -6, -5, -7, -3, -7, -3, -6, -1.99127, -5.99588, -2, -2, 0, -2, 0, -6, 1, -6, 1, -7, 3, -7, 3, -6, 4, -6, 4, 4, 1, 6, -2, 6, -4, 4, -4, 4, -6, 2 )
 
-[node name="platDetector" type="RayCast2D" parent="."]
+[node name="left" type="CollisionPolygon2D" parent="."]
+visible = false
+polygon = PoolVector2Array( -6, -6, -5, -6, -5, -7, -3, -7, -3, -6, -1.99127, -5.99588, -2, -2, 0, -2, 0, -6, 1, -6, 1, -7, 3, -7, 3, -6, 4, -6, 4, 2, 3, 4, 0, 6, -3, 6, -6, 4, -6, 1 )
+disabled = true
+
+[node name="platDetector" type="RayCast2D" parent="." groups=[
+"platDetectors",
+]]
+visible = false
+position = Vector2( 0, 6 )
 enabled = true
-cast_to = Vector2( 0, 10 )
+cast_to = Vector2( 0, 1 )
 collision_mask = 8
 collide_with_areas = true
-__meta__ = {
-"_edit_lock_": true
-}
+
+[node name="platDetector2" type="RayCast2D" parent="." groups=[
+"platDetectors",
+]]
+visible = false
+position = Vector2( -1, 6 )
+enabled = true
+cast_to = Vector2( 0, 1 )
+collision_mask = 8
+collide_with_areas = true
+
+[node name="Bonker" type="RayCast2D" parent="." groups=[
+"bonkers",
+]]
+visible = false
+position = Vector2( 2, -7 )
+enabled = true
+cast_to = Vector2( 0, -1 )
+collision_mask = 8
+collide_with_areas = true
+
+[node name="Bonker2" type="RayCast2D" parent="." groups=[
+"bonkers",
+]]
+visible = false
+position = Vector2( -4, -7 )
+enabled = true
+cast_to = Vector2( 0, -1 )
+collision_mask = 8
+collide_with_areas = true
 
 [node name="Sight" type="RayCast2D" parent="."]
+visible = false
 enabled = true
 cast_to = Vector2( 5, 0 )
 collision_mask = 12
 __meta__ = {
 "_edit_lock_": true
 }
-
-[node name="DepleteTimer" type="Timer" parent="."]
-process_mode = 0
-wait_time = 0.1
-autostart = true
-
-[node name="ChargeTimer" type="Timer" parent="."]
-process_mode = 0
-wait_time = 0.2
-autostart = true
-
-[node name="RoboPow" parent="." instance=ExtResource( 7 )]
-margin_left = -195.805
-margin_top = -105.174
-margin_right = -170.805
-margin_bottom = -100.174
-rect_scale = Vector2( 1.5, 1.5 )
-
-[node name="Tween" type="Tween" parent="."]
-
-[connection signal="timeout" from="DepleteTimer" to="." method="_on_DepleteTimer_timeout"]
-[connection signal="timeout" from="ChargeTimer" to="." method="_on_ChargeTimer_timeout"]
