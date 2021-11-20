@@ -1,0 +1,72 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://EndScreen.gd" type="Script" id=2]
+[ext_resource path="res://addons/GodotTIE/text_interface_engine.gd" type="Script" id=3]
+[ext_resource path="res://art/menu panel.png" type="Texture" id=4]
+[ext_resource path="res://sounds/warble3.wav" type="AudioStream" id=5]
+
+[node name="EndScreen" type="Node2D"]
+position = Vector2( 184, 110 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Sprite" type="TextureRect" parent="."]
+margin_left = -161.0
+margin_top = -95.0
+margin_right = 151.0
+margin_bottom = 97.0
+texture = ExtResource( 4 )
+expand = true
+__meta__ = {
+"_edit_lock_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Counter" type="Timer" parent="."]
+wait_time = 0.1
+
+[node name="tieD" type="ReferenceRect" parent="."]
+margin_left = 35.0
+margin_top = 20.0
+margin_right = 92.0
+margin_bottom = 48.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+FONT = ExtResource( 1 )
+BLINKING_INPUT = false
+
+[node name="Recovered" type="RichTextLabel" parent="."]
+margin_left = -75.0
+margin_top = -22.0
+margin_right = 87.0
+margin_bottom = 8.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.7, 0.7, 1, 1 )
+text = "Relix Recovered : "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Days" type="RichTextLabel" parent="."]
+margin_left = -66.0
+margin_top = 20.0
+margin_right = 42.0
+margin_bottom = 37.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.7, 0.3, 0.3, 1 )
+text = "Days Remaining : "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sounds" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )
+volume_db = 10.0
+
+[connection signal="timeout" from="Counter" to="." method="_on_Counter_timeout"]
+[connection signal="buff_end" from="tieD" to="." method="_on_tieD_buff_end"]

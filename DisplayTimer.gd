@@ -1,13 +1,16 @@
 extends Label
 
-var secs = 100
+var secs = 160
 
 signal day_passed
 
 func _on_Timer_timeout():
 	secs -= 1
+	if secs > 0:
+		Global.totalSecs += 1
 	get_time()
 	if secs == 0:
+		stop()
 		emit_signal("day_passed")
 
 func get_time():
@@ -28,12 +31,3 @@ func stop():
 
 func start():
 	$Timer.start()
-
-func set_pb(pbmins, pbsecs):
-	var timeString = ''
-	if pbmins < 10: timeString = '0' + pbmins as String
-	else: timeString = pbmins as String
-	timeString += ':'
-	if pbsecs < 10: timeString += '0' + pbsecs as String
-	else: timeString += pbsecs as String
-	$PbTimer.set_text(timeString)

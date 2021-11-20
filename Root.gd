@@ -1,15 +1,14 @@
 extends Node
 
 onready var relics = get_tree().get_nodes_in_group('relics')
-var numRelics = 0
 var recovery = 0.0
 onready var pc = $PC
 onready var tutorial = $Tutorial
+onready var Results = $EndScreen
 onready var txt = $PC/Camera2D/SyndiBox
 onready var cam = $PC/Camera2D
 onready var camLimiter = $Limiter
 onready var held_relics := []
-var recovered_relics = 0
 onready var startpos = $Start.global_position
 onready var water = $Water
 
@@ -23,7 +22,7 @@ onready var tutorialPhase = 'baby steps'
 
 func _ready():
 	limit_camera()
-	numRelics = relics.size()
+	Global.numRelix = relics.size()
 
 func _on_PC_grab(pos):
 	var closest
@@ -53,6 +52,11 @@ func _unhandled_input(event):
 		pass
 	if event.is_action_pressed("drop_all"):
 		lose_relics()
+		pc.throwav()
+	if event.is_action_pressed("retire"):
+		if $Retire.is_visible():
+			if Global.daysLeft == 1: game_end()
+			else: day_end()
 
 func _on_PC_drop():
 	if held_relics.size() == 0:
@@ -162,40 +166,67 @@ func limit_camera():
 	cam.limit_left = camLimiter.get_limit('left')
 
 func _on_DisplayTimer_day_passed():
+	if Global.daysLeft == 1:
+		game_end()
 	day_end()
 
 func day_end():
+#	increment day counter
+	Day += 1
+	Global.daysLeft -= 1
 	print(recovery as String + '% relics recovered')
 	print('day over')
-#	drop all relix
-	lose_relics()
 #	fade out
+	pc.thrusters = false
 	$AnimationPlayer.play("fade out")
 	yield($AnimationPlayer, "animation_finished")
+	
+#	drop all relix
+	lose_relics()
 #	reset to start pos
-	pc.global_position = startpos
+	
 #	kill all relix underwater
 	yield(get_tree().create_timer(1, false), "timeout")
 	kill_relics()
-#	increment day counter
 #	swap out water
-	Day += 1
 	water.change_water(Day)
 #	reset timer
-	$DisplayTimer.secs = 101
-	$DisplayTimer.get_time()
 	$DisplayTimer.stop()
+	$DisplayTimer.secs = 180
+	$DisplayTimer.get_time()
 	yield(get_tree().create_timer(1, false), "timeout")
-#	fade in, timer start
+#	fade in
+	Results.global_position = startpos
+	pc.global_position = startpos
 	$AnimationPlayer.play_backwards("fade out")
 	yield($AnimationPlayer, "animation_finished")
+	Results.end_screen()
 
 func _on_Chest_body_entered(body):
 	if body.is_in_group('relics'):
 		$deposit.play()
 #		print('box it')
-		recovered_relics += 1
-		recovery = floor((recovered_relics as float/numRelics as float)*100)
+		Global.relixRecovered += 1
+		recovery = floor((Global.relixRecovered as float/Global.numRelix as float)*100)
 		body.remove_from_group('relics')
 		body.queue_free()
 		relics = get_tree().get_nodes_in_group('relics')
+
+func _on_EndScreen_finished():
+#	timer start
+	yield(get_tree().create_timer(2, false), "timeout")
+	Results.global_position = Vector2()
+	$DisplayTimer.start()
+	pc.thrusters = true
+
+func game_end():
+	get_tree().change_scene("res://GameOver.tscn")
+
+func _on_Camper_body_entered(body):
+	if body == pc:
+		print('camp')
+		$Retire.set_visible(true)
+
+func _on_Camper_body_exited(body):
+	if body == pc:
+		$Retire.set_visible(false)

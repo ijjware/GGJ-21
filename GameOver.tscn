@@ -1,0 +1,156 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Font.tres" type="DynamicFont" id=1]
+[ext_resource path="res://art/menu panel.png" type="Texture" id=2]
+[ext_resource path="res://GameOver.gd" type="Script" id=3]
+
+[sub_resource type="Animation" id=1]
+resource_name = "fades"
+length = 10.0
+step = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath("lblRelix:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2.5, 3.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath("lblTime:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 4.5, 5.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/2/type = "value"
+tracks/2/path = NodePath("lblThx:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"times": PoolRealArray( 0, 8.5, 9.5 ),
+"transitions": PoolRealArray( 1, 1.1487, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/3/type = "value"
+tracks/3/path = NodePath("lblCred:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/keys = {
+"times": PoolRealArray( 0, 6.5, 7.5 ),
+"transitions": PoolRealArray( 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+tracks/4/type = "value"
+tracks/4/path = NodePath("CanvasModulate:color")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/keys = {
+"times": PoolRealArray( 0, 1.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[node name="GameOver" type="Node"]
+script = ExtResource( 3 )
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+zoom = Vector2( 0.35, 0.35 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/fades = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="lblOver" type="RichTextLabel" parent="."]
+margin_left = -31.0
+margin_top = -54.0
+margin_right = 32.0
+margin_bottom = -41.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.372549, 0.764706, 0.729412, 1 )
+text = "Game Over"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lblRelix" type="RichTextLabel" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = -75.0
+margin_top = -20.0
+margin_right = 75.0
+margin_bottom = -6.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.372549, 0.764706, 0.729412, 1 )
+text = "Relix Recovered : 50 / 50"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lblTime" type="RichTextLabel" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = -77.0
+margin_top = 3.0
+margin_right = 73.0
+margin_bottom = 15.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.372549, 0.764706, 0.729412, 1 )
+text = "Your Time : 0000 seconds"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lblThx" type="RichTextLabel" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = -70.0
+margin_top = 52.0
+margin_right = 64.0
+margin_bottom = 64.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.372549, 0.764706, 0.729412, 1 )
+text = "Thank You For Playing!"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="lblCred" type="RichTextLabel" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = -57.0
+margin_top = 29.0
+margin_right = 50.0
+margin_bottom = 41.0
+custom_fonts/normal_font = ExtResource( 1 )
+custom_colors/default_color = Color( 0.372549, 0.764706, 0.729412, 1 )
+text = "Game By : Grochlin"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color( 1, 1, 1, 0 )

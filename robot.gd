@@ -42,7 +42,7 @@ export var sIncWet = 10
 onready var sightDist = 6
 onready var facingDir = $Head.get_animation()
 onready var sightline = $Sight
-onready var first_pos = Vector2(0, -8)
+onready var first_pos = Vector2(-1, -8)
 var pos_gap = Vector2(0, -12)
 var relicBoxes = []
 var underwater = false
@@ -105,6 +105,7 @@ func seeing(pos):
 	sightline.force_raycast_update()
 
 func _physics_process(delta):
+	if not thrusters: return
 	if Input.is_action_pressed("right"):
 		if sWalk < minWalk: velocity.x = minWalk
 		else: velocity.x = sWalk

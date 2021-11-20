@@ -162,14 +162,14 @@ tracks/5/keys = {
 
 [sub_resource type="SpriteFrames" id=3]
 animations = [ {
-"frames": [ ExtResource( 4 ) ],
-"loop": true,
-"name": "left",
-"speed": 5.0
-}, {
 "frames": [ ExtResource( 3 ) ],
 "loop": true,
 "name": "right",
+"speed": 5.0
+}, {
+"frames": [ ExtResource( 4 ) ],
+"loop": true,
+"name": "left",
 "speed": 5.0
 } ]
 
@@ -184,18 +184,15 @@ sInc = 15
 
 [node name="walk" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 8 )
-bus = "Water"
 area_mask = 29
 
 [node name="jamp" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 7 )
-bus = "Water"
 area_mask = 29
 
 [node name="possessives" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource( 9 )
 volume_db = -10.0
-bus = "Water"
 area_mask = 29
 
 [node name="Ani" type="AnimationPlayer" parent="."]

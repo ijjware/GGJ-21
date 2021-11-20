@@ -15,9 +15,21 @@ func change_water(day):
 	match(day):
 		2:
 			$day1.set_deferred('disabled', true)
-			$day1.set_visible(false)
+			$watah1.set_visible(false)
 			$day2.set_deferred('disabled', false)
-			$day2.set_visible(true)
+			$watah2.set_visible(true)
 		3:
 			$day2.set_deferred('disabled', true)
+			$watah2.set_visible(false)
 			$day3.set_deferred('disabled', false)
+			$watah3.set_visible(true)
+		4:
+			$day3.set_deferred('disabled', true)
+			$watah3.set_visible(false)
+			$day4.set_deferred('disabled', false)
+			$watah4.set_visible(true)
+		5:
+			$day4.set_deferred('disabled', true)
+			$watah4.set_visible(false)
+			$day5.set_deferred('disabled', false)
+			$watah5.set_visible(true)
